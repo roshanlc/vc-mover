@@ -60,6 +60,9 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	// auto manage the downloads folder at program startup
+	go autoMoveAtStart(downloadsDir)
+
 	// Create new watcher.
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
