@@ -15,7 +15,18 @@ import (
 	"github.com/gen2brain/beeep"
 )
 
+// setupLog prepares folder for log output
+func setupLogFolder(homeDir string) error {
+	return createDirIfNotExists(homeDir + "/.cache/vericred-mover")
+}
+
+// vericred regexp
+var vericredRegex *regexp.Regexp
+
 func main() {
+
+	// regex to catch all file starting with "vericred_"
+	vericredRegex = regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
 
 	// get the download directory's absolute path
 	homeDir, err := os.UserHomeDir()
@@ -23,19 +34,36 @@ func main() {
 		log.Fatal(err)
 	}
 
-	downloadsDir, err := filepath.Abs(homeDir + "/Downloads")
-
+	// setup for logs
+	err = setupLogFolder(homeDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// regex to catch all file starting with "vericred_"
-	vericredRegex := regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
+	// get current date
+	t := time.Now()
+	year, month, day := t.Date()
+
+	logFile, err := os.OpenFile(fmt.Sprintf(homeDir+"/.cache/vericred-mover/vericred-mover_%d_%d_%d.log", year, month, day), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+	if err != nil {
+		log.Println("Error creating log file")
+		log.Fatal(err)
+	}
+
+	defer logFile.Close()
+
+	logger := log.New(logFile, "", log.Ldate|log.Ltime|log.Lshortfile)
+	downloadsDir, err := filepath.Abs(homeDir + "/Downloads")
+
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	// Create new watcher.
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	defer watcher.Close()
 
@@ -47,33 +75,31 @@ func main() {
 				if !ok {
 					return
 				}
+
 				if event.Has(fsnotify.Create) {
-					fmt.Println("Create event: ", event.Name)
+					// check if the file name matches vericred_pattern and is not a part file
 
-					// check if the file name matches vericred_pattern
-
-					if vericredRegex.MatchString(event.Name) {
-						fmt.Println("--------------------------------")
-						fmt.Println("found vericred match: ", event.Name)
+					if vericredRegex.MatchString(event.Name) && !strings.HasSuffix(event.Name, ".part") {
 
 						// Get file size info
 
 						stat, err := os.Stat(event.Name)
 						if err != nil {
-							log.Println(err)
+							logger.Println(err)
 						} else {
 							if stat.Size() > 0 {
 
+								logger.Println("found vericred match: ", event.Name)
 								// run the (moving, extraction, deletion) process in a separate goroutine
 								go func() {
-									log.Println(stat.Name(), " : ", stat.Size())
-									log.Println("starting file movement for ", stat.Name())
+									logger.Println("starting file movement for ", stat.Name())
 									ext := filepath.Ext(event.Name)
 
 									// get the folder name
 									dirName := extractDirName(stat.Name())
 									if dirName == "" {
-										log.Println("Unable to extract directory name for ", event.Name)
+										logger.Println("Unable to extract directory name for ", event.Name)
+										beeep.Alert("Vericred-mover", "Unable to extract directory name for "+event.Name, "")
 										return
 									}
 
@@ -82,8 +108,9 @@ func main() {
 									// create the folder if not exists
 									err := createDirIfNotExists(dirPath)
 									if err != nil {
-										log.Println("Unable to create directory: ", dirName)
-										log.Println(err)
+										logger.Println("Unable to create directory: ", dirName)
+										logger.Println(err)
+										beeep.Alert("Vericred-mover", "Unable to create directory: "+dirName, "")
 										return
 									}
 
@@ -93,29 +120,30 @@ func main() {
 
 									err = moveToDir(source, dest)
 									if err != nil {
-										log.Println("Unable to move file to its folder: ", event.Name)
-										log.Println(err)
+										logger.Println("Unable to move file to its folder: ", event.Name)
+										logger.Println(err)
+										beeep.Alert("Vericred-mover", "Unable to move file to its folder: "+event.Name, "")
+
 										return
 									}
 
 									// unzip the file if required
 									if strings.EqualFold(ext, ".zip") {
-										log.Println("starting zip extraction")
-										fmt.Println("source zip: ", dest)
+										logger.Println("starting zip extraction")
 										destFilePath := strings.TrimSuffix(dest, ".zip")
-										fmt.Println("unzipped file: ", destFilePath)
+
 										err = unZipAndRemove(dest, destFilePath)
 										if err != nil {
-											log.Println("Failed unzip process:", err)
-											beeep.Alert("Vericred-mover", "Unzip process failed due to:", err.Error())
+											logger.Println("Failed unzip process:", err.Error())
+											beeep.Alert("Vericred-mover", "Unzip process failed due to:", "")
 											return
 										} else {
-											log.Println("Unzip successfull for ", destFilePath)
+											logger.Println("Unzip successfull for ", destFilePath)
 											beeep.Notify("Vericred-mover", destFilePath+"has been moved to its directory", "")
 										}
 									} else {
-										log.Println("File movement successful for: ", dest)
-										beeep.Notify("Vericred-mover", "File moved successfuly: "+dest, "")
+										logger.Println("File movement successful for: ", stat.Name())
+										beeep.Notify("Vericred-mover", "File moved successfuly to: "+dest, "")
 									}
 
 								}()
@@ -131,7 +159,7 @@ func main() {
 				if !ok {
 					return
 				}
-				fmt.Println("error:", err)
+				logger.Println("error:", err)
 			}
 		}
 	}()
@@ -139,7 +167,7 @@ func main() {
 	// Add a path.
 	err = watcher.Add(downloadsDir)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	// Block main goroutine forever.
