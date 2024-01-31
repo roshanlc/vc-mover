@@ -1,6 +1,6 @@
 module github.com/roshanlc/vericred-mover
 
-go 1.21.5
+go 1.21
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0
