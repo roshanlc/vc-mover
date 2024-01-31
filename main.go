@@ -17,7 +17,7 @@ import (
 
 // setupLog prepares folder for log output
 func setupLogFolder(homeDir string) error {
-	return createDirIfNotExists(homeDir + "/.cache/vericred-mover")
+	return createDirIfNotExists(homeDir + "/.cache/vc-mover")
 }
 
 // vericred regexp
@@ -46,7 +46,7 @@ func main() {
 	t := time.Now()
 	year, month, day := t.Date()
 
-	logName := fmt.Sprintf(homeDir+"/.cache/vericred-mover/vericred-mover_%d_%d_%d.log", year, month, day)
+	logName := fmt.Sprintf(homeDir+"/.cache/vc-mover/vc-mover_%d_%d_%d.log", year, month, day)
 	logFile, err := os.OpenFile(logName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
 	if err != nil {
@@ -259,5 +259,5 @@ func unZipAndRemove(zipFilePath, destFilePath string) error {
 
 // startupInfo prints startup artwork
 func startupInfo() {
-	fmt.Printf("\nVericred-Mover: A file watcher for vericred team.\nAuthor: Roshan Lamichhane\nPlease open issue or PRs at https://www.github.com/roshanlc/vericred-mover\n\n")
+	fmt.Printf("\nVc-Mover: A file watcher for vc team.\nAuthor: Roshan Lamichhane\nPlease open issue or PRs at https://www.github.com/roshanlc/vc-mover\n\n")
 }

@@ -1,4 +1,4 @@
-module github.com/roshanlc/vericred-mover
+module github.com/roshanlc/vc-mover
 
 go 1.21
 
