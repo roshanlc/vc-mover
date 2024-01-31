@@ -17,6 +17,7 @@
 ## Installation 
 1. Install as a binary only
 ```bash
+# make sure you have go installed on your machine.
 go install github.com/roshanlc/vericred-mover@latest
 
 # Run: (Logs are available at ~/.cache/vericred-mover/*.log)

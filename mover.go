@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -12,6 +13,8 @@ import (
 // autoMoveAtStart goes through content of downloads folder at startup
 // and moves them  to respective directory
 func autoMoveAtStart(downloadsDir string) {
+	fmt.Println(strings.Repeat("-", 50))
+	fmt.Printf("Auto moving pre-existing vericred files in Downloads directory\n")
 	files, err := os.ReadDir(downloadsDir)
 
 	if err != nil {
@@ -102,4 +105,6 @@ func autoMoveAtStart(downloadsDir string) {
 
 	// wait for go routines to complete
 	wg.Wait()
+	fmt.Printf("\nAuto movement of pre-existing vericred files completed\n")
+	fmt.Println(strings.Repeat("-", 50))
 }

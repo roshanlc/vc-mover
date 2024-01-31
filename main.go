@@ -25,6 +25,8 @@ var vericredRegex *regexp.Regexp
 
 func main() {
 
+	startupInfo()
+
 	// regex to catch all file starting with "vericred_"
 	vericredRegex = regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
 
@@ -44,7 +46,8 @@ func main() {
 	t := time.Now()
 	year, month, day := t.Date()
 
-	logFile, err := os.OpenFile(fmt.Sprintf(homeDir+"/.cache/vericred-mover/vericred-mover_%d_%d_%d.log", year, month, day), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logName := fmt.Sprintf(homeDir+"/.cache/vericred-mover/vericred-mover_%d_%d_%d.log", year, month, day)
+	logFile, err := os.OpenFile(logName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
 	if err != nil {
 		log.Println("Error creating log file")
@@ -59,6 +62,8 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
+
+	fmt.Println("**** Logs for live watcher will be available at: ", logName, " ****")
 
 	// auto manage the downloads folder at program startup
 	go autoMoveAtStart(downloadsDir)
@@ -250,4 +255,9 @@ func unZipAndRemove(zipFilePath, destFilePath string) error {
 	}
 
 	return nil
+}
+
+// startupInfo prints startup artwork
+func startupInfo() {
+	fmt.Printf("\nVericred-Mover: A file watcher for vericred team.\nAuthor: Roshan Lamichhane\nPlease open issue or PRs at https://www.github.com/roshanlc/vericred-mover\n\n")
 }
