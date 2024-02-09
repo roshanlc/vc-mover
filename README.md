@@ -10,12 +10,20 @@
 - Watch for new "vc" files
 
 ## Todo
-- Add support for deleting old files 
 - Add config support
+- Add support for deleting old files 
 
 
 ## Installation 
-1. Install as a binary only
+1. Install using one-liner
+
+    Installs the binary and sets it auto-run on login
+```bash
+# make sure you have go installed on your machine.
+bash -c "$(wget -qO-  https://github.com/roshanlc/vc-mover/blob/master/scripts/setup.sh)"
+```
+
+2. Install as a binary only
 ```bash
 # make sure you have go installed on your machine.
 go install github.com/roshanlc/vc-mover@latest
@@ -23,10 +31,6 @@ go install github.com/roshanlc/vc-mover@latest
 # Run: (Logs are available at ~/.cache/vc-mover/*.log)
 vc-mover
 ```
-
-2. Install as a systemd service
-> In-progress
-
 
 ## Author
 Roshan Lamichhane
