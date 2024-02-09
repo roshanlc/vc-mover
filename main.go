@@ -25,17 +25,30 @@ var vericredRegex *regexp.Regexp
 
 func main() {
 
+	// cli flags processing
+	flags := extractCLIFlags(os.Args)
+
+	fmt.Println(os.Args)
+	// basic startup info
 	startupInfo()
 
 	// regex to catch all file starting with "vericred_"
 	vericredRegex = regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
 
-	// get the download directory's absolute path
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
+	var homeDir string
+	var err error
+
+	homeDir, ok := flags["home"]
+
+	if !ok {
+		// get the download directory's absolute path
+		homeDir, err = os.UserHomeDir()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
+	fmt.Println("Home dir = ", homeDir) // TODO: remove this later
 	// setup for logs
 	err = setupLogFolder(homeDir)
 	if err != nil {
@@ -260,4 +273,17 @@ func unZipAndRemove(zipFilePath, destFilePath string) error {
 // startupInfo prints startup artwork
 func startupInfo() {
 	fmt.Printf("\nVc-Mover: A file watcher for vc team.\nAuthor: Roshan Lamichhane\nPlease open issue or PRs at https://www.github.com/roshanlc/vc-mover\n\n")
+}
+
+// extractCLIFlags extracts value from cli flags
+func extractCLIFlags(flags []string) map[string]string {
+	var values map[string]string = make(map[string]string)
+	for _, v := range flags {
+
+		if strings.HasPrefix(v, "--home") {
+			values["home"] = strings.Split(v, "=")[1]
+		}
+	}
+
+	return values
 }
