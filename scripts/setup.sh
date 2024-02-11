@@ -11,4 +11,5 @@ fi
 go install github.com/roshanlc/vc-mover@latest && echo "exec ~/go/bin/vc-mover" >> ~/.profile
 
 # start the program right away
-source ~/.profile &
+exec ~/go/bin/vc-mover &
+echo "Vc-mover has been started in background"

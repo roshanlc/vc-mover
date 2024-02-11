@@ -14,13 +14,13 @@
 - Add support for deleting old files 
 
 
-## Installation 
+## Installation / Update
 1. Install using one-liner
 
     Installs the binary and sets it auto-run on login
 ```bash
 # make sure you have go installed on your machine.
-bash -c "$(wget -qO-  https://github.com/roshanlc/vc-mover/blob/master/scripts/setup.sh)"
+bash -c "$(wget -qO- https://raw.githubusercontent.com/roshanlc/vc-mover/master/scripts/setup.sh)"
 ```
 
 2. Install as a binary only
