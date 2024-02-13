@@ -1,8 +1,9 @@
 [Unit]
+Author=Roshan Lamichhane
 Description=Systemd service file for vc-mover
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 
 [Service]
-ExecStart=/bin/bash -c '/usr/local/bin/vc-mover --home=/home/roshanam'
+ExecStart=/bin/bash -c ~/go/bin/vc-mover

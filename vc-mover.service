@@ -1,8 +1,0 @@
-[Unit]
-Description=Systemd service file for vc-mover
-
-[Install]
-WantedBy=multi-user.target
-
-[Service]
-ExecStart=/bin/bash -c '/usr/local/bin/vc-mover --home=/home/roshanam'

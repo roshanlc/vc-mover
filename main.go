@@ -25,30 +25,18 @@ var vericredRegex *regexp.Regexp
 
 func main() {
 
-	// cli flags processing
-	flags := extractCLIFlags(os.Args)
-
-	fmt.Println(os.Args)
 	// basic startup info
 	startupInfo()
 
 	// regex to catch all file starting with "vericred_"
 	vericredRegex = regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
 
-	var homeDir string
-	var err error
-
-	homeDir, ok := flags["home"]
-
-	if !ok {
-		// get the download directory's absolute path
-		homeDir, err = os.UserHomeDir()
-		if err != nil {
-			log.Fatal(err)
-		}
+	// get the download directory's absolute path
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	fmt.Println("Home dir = ", homeDir) // TODO: remove this later
 	// setup for logs
 	err = setupLogFolder(homeDir)
 	if err != nil {
@@ -160,7 +148,7 @@ func main() {
 											return
 										} else {
 											logger.Println("Unzip successfull for ", destFilePath)
-											beeep.Notify("Vericred-mover", destFilePath+"has been moved to its directory", "")
+											beeep.Notify("Vericred-mover", event.Name+" has been moved to its directory", "")
 										}
 									} else {
 										logger.Println("File movement successful for: ", stat.Name())
