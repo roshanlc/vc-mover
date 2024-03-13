@@ -29,7 +29,7 @@ func main() {
 	startupInfo()
 
 	// regex to catch all file starting with "vericred_"
-	vericredRegex = regexp.MustCompile(`(?i)vericred_.*\d+.*\.*`)
+	vericredRegex = regexp.MustCompile(`(?i)^vericred_.*\d+.*\.*`)
 
 	// get the download directory's absolute path
 	homeDir, err := os.UserHomeDir()
